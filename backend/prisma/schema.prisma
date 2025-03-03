@@ -1,0 +1,229 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  role          UserRole
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Profile information
+  profile       Profile?
+  
+  // Role-specific relations
+  student       Student?
+  teacher       Teacher?
+  admin         Admin?
+
+  // Common relations
+  notifications Notification[]
+}
+
+model Profile {
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  firstName   String
+  lastName    String
+  phoneNumber String?
+  address     String?
+  avatar      String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Student {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  studentId     String    @unique
+  dateOfBirth   DateTime
+  grade         String
+  section       String
+  parentName    String
+  parentEmail   String
+  parentPhone   String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enrollments   Enrollment[]
+  attendance    Attendance[]
+  payments      Payment[]
+  documents     Document[]
+}
+
+model Teacher {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  teacherId     String    @unique
+  subject       String
+  qualification String
+  experience    Int
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courses       Course[]
+  materials     Material[]
+}
+
+model Admin {
+  id        String    @id @default(cuid())
+  userId    String    @unique
+  adminId   String    @unique
+  department String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Course {
+  id          String    @id @default(cuid())
+  name        String
+  code        String    @unique
+  description String
+  teacherId   String
+  grade       String
+  section     String
+  schedule    Json
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  teacher     Teacher   @relation(fields: [teacherId], references: [id])
+  enrollments Enrollment[]
+  materials   Material[]
+  attendance  Attendance[]
+}
+
+model Enrollment {
+  id        String    @id @default(cuid())
+  studentId String
+  courseId  String
+  status    String
+  enrolledAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  student   Student   @relation(fields: [studentId], references: [id])
+  course    Course    @relation(fields: [courseId], references: [id])
+}
+
+model Material {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  type        String    // document, video, assignment
+  fileUrl     String
+  courseId    String
+  teacherId   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  course      Course    @relation(fields: [courseId], references: [id])
+  teacher     Teacher   @relation(fields: [teacherId], references: [id])
+}
+
+model Attendance {
+  id        String           @id @default(cuid())
+  date      DateTime
+  status    AttendanceStatus
+  studentId String
+  courseId  String
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  // Relations
+  student   Student         @relation(fields: [studentId], references: [id])
+  course    Course          @relation(fields: [courseId], references: [id])
+}
+
+model Payment {
+  id          String        @id @default(cuid())
+  amount      Float
+  description String
+  status      PaymentStatus
+  dueDate     DateTime
+  paidAt      DateTime?
+  studentId   String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  student     Student       @relation(fields: [studentId], references: [id])
+}
+
+model Document {
+  id          String    @id @default(cuid())
+  title       String
+  type        String
+  fileUrl     String
+  studentId   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  student     Student   @relation(fields: [studentId], references: [id])
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  date        DateTime
+  location    String
+  attendees   Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Notification {
+  id          String    @id @default(cuid())
+  title       String
+  message     String
+  type        String
+  read        Boolean   @default(false)
+  userId      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  user        User      @relation(fields: [userId], references: [id])
+}
+
