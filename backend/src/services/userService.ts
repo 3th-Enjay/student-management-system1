@@ -1,6 +1,6 @@
-import { prisma } from "@/lib/prisma"
+import { prisma } from "../lib/prisma"
 import { hash } from "bcryptjs"
-import type { UserDTO, ProfileDTO } from "@/types"
+import type { UserDTO, ProfileDTO } from "../types"
 
 export async function createUser(
   email: string,

@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma"
-import type { CourseDTO } from "@/types"
+import { prisma } from "../lib/prisma"
+import type { CourseDTO } from "../types"
 
 export async function createCourse(data: Omit<CourseDTO, "id">) {
   return await prisma.course.create({

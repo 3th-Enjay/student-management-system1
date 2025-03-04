@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma"
-import type { AttendanceDTO } from "@/types"
+import { prisma } from "../lib/prisma"
+import type { AttendanceDTO } from "../types"
 
 export async function markAttendance(data: Omit<AttendanceDTO, "id">) {
   return await prisma.attendance.create({

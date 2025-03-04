@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma"
-import type { EventDTO } from "@/types"
+import { prisma } from "../lib/prisma"
+import type { EventDTO } from "../types"
 
 export async function createEvent(data: Omit<EventDTO, "id">) {
   return await prisma.event.create({

@@ -1,6 +1,6 @@
-import { prisma } from "@/lib/prisma"
-import type { MaterialDTO } from "@/types"
-import { uploadFile, deleteFile } from "@/lib/storage"
+import { prisma } from "../lib/prisma"
+import type { MaterialDTO } from "../types"
+import { uploadFile, deleteFile } from "../lib/storage"
 
 export async function createMaterial(data: Omit<MaterialDTO, "id" | "fileUrl">, file: Buffer, contentType: string) {
   const key = `materials/${data.courseId}/${Date.now()}-${Math.random().toString(36).substring(7)}`

@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma"
-import type { PaymentDTO } from "@/types"
+import { prisma } from "../lib/prisma"
+import type { PaymentDTO } from "../types"
 
 export async function createPayment(data: Omit<PaymentDTO, "id">) {
   return await prisma.payment.create({

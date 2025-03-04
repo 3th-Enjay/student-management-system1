@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma"
-import type { NotificationDTO } from "@/types"
+import { prisma } from "../lib/prisma"
+import type { NotificationDTO } from "../types"
 
 export async function createNotification(data: Omit<NotificationDTO, "id" | "read">) {
   return await prisma.notification.create({
